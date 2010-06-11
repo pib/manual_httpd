@@ -1,0 +1,3 @@
+This is a tiny Python HTTP server, which prompts the user for the proper response to each request.
+
+It's handy for debugging HTTP client code or reverse-engineering HTTP-based protocols.
