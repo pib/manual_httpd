@@ -28,8 +28,15 @@ def get_input(prompt):
 
 def server_prompt(environ):
     path = request_path(environ)
-    print '\n\n%s %s' % (environ['REQUEST_METHOD'], path)
+    method = environ['REQUEST_METHOD']
+    print '\n\n%s %s' % (method, path)
     print request_headers(environ), '\n'
+
+    content_length = int(environ['CONTENT_LENGTH'] or 0)
+    if content_length:
+        print '---   %s body    ---' % method
+        print environ['wsgi.input'].read(content_length)
+        print '---end of %s body---' % method
 
     remote = environ.get('REMOTE_HOST', 'somebody')
     inp = get_input('%s wants %s\n>>> ' % (remote, path))
@@ -42,12 +49,8 @@ def server_prompt(environ):
 def manual_handler(environ, start_response):
     response = server_prompt(environ)
 
-    if environ['REQUEST_METHOD'] == 'HEAD':
-        length = ''.join(response)
-        start_response('200 OK', [('Content-Length', length)])
-        return []
     start_response('200 OK', [])
-    return response
+    return list(response)
 
 
 def run():
